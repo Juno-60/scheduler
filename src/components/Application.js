@@ -5,17 +5,20 @@ import "components/Application.scss";
 import "components/Appointment"
 import DayList from "./DayList";
 import Appointment from "components/Appointment";
-import { getAppointmentsForDay, getInterview } from "../helpers/selectors";
+import { getAppointmentsForDay, getInterviewersForDay, getInterview } from "../helpers/selectors";
 
 
 export default function Application(props) {
   const [state, setState] = useState({
     day: "Monday",
     days: [],
-    appointments: {}
+    appointments: {},
+    interviewers: {}
   });
 
   const dailyAppointments = getAppointmentsForDay(state, state.day);
+  const todaysInterviewers = getInterviewersForDay(state, state.day)
+  console.log("todaysInterviewers: ", todaysInterviewers)
 
   const setDay = day => setState({ ...state, day });
 
@@ -26,9 +29,12 @@ export default function Application(props) {
         key={appointment.id}
         {...appointment}
         interview={interview}
+        interviewers={todaysInterviewers}
       />
     );
   });
+
+  
 
   useEffect(() => {
     Promise.all([
@@ -75,7 +81,10 @@ export default function Application(props) {
       </section>
       <section className="schedule">
         {parsedAppointments}
-        <Appointment key="last" time="5pm" />
+        <Appointment
+          key="last"
+          time="5pm"
+        />
       </section>
     </main>
   );

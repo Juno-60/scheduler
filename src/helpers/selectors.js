@@ -1,3 +1,4 @@
+// SELECT INTERVIEW APPOINTMENTS BY DAY
 export function getAppointmentsForDay(state, day) {
   const resultArray = [];
   let dayNumber = 0;
@@ -24,6 +25,35 @@ export function getAppointmentsForDay(state, day) {
   return resultArray;
 }
 
+// // SELECT INTERVIEWERS BY DAY
+export function getInterviewersForDay(state, day) {
+  const resultArray = [];
+  let dayNumber = 0;
+
+  const interviewerGetter = () => {
+    for (let i = 0; i < state.days.length; i++) {
+      if (state.days[i].name === day) {
+        // set variable containing the array index of the given day
+        dayNumber = i;
+        // returns the array of interviewers for given day
+        return state.days[i].interviewers
+      }
+      // returns null if previous conditions don't work out
+    } return null;
+  }
+
+  // checks for a non-null value from interviewerGetter
+  if (interviewerGetter()) {
+    for (let i = 0; i < state.days[dayNumber].interviewers.length; i++) {
+      // pushes interviewer to array if its key matches
+      resultArray.push(state.interviewers[interviewerGetter()[i]])
+    }
+  }
+  return resultArray;
+}
+
+
+// INTERVIEW GETTER
 export function getInterview(state, interview) {
   if (!interview) return null;
   let interviewerNumber = interview.interviewer
