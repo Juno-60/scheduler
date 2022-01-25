@@ -27,29 +27,50 @@ export default function Application(props) {
 
   // function to book interviews, pass as props into each appointment component
   function bookInterview(id, interview) {
-    console.log(id, interview);
-
     const appointment = {
       ...state.appointments[id],
       interview: { ...interview }
     };
-
     const appointments = {
       ...state.appointments,
       [id]: appointment
     };
-
     setState({
       ...state,
       appointments
     });
-
     return (
       axios.put(`api/appointments/${id}`, appointment)
         .then((res) => setState((prev) => ({ ...prev, appointment })))
         .catch(err => console.log(err.message))
-      )
+    )
+  };
+
+  // function to delete interviews
+  function cancelInterview(id) {
+
+    // create a copy of an appointment object, set state of interview to be null
+    const appointment = {
+      // spreads the state to take in all object keys
+      ...state.appointments[id],
+      // overwrites the interview key to NULL by providing a new value for that key
+      interview: null
     };
+
+    // create NEW appointments object
+    const appointments = {
+      ...state.appointments,
+      // targets ID of appointments, overwrites it with value of appointment variable from above
+      [id]: appointment
+    };
+
+    // 
+    return (
+      axios.delete(`api/appointments/${id}`)
+      // takes in and makes a copy of the previous STATE, then overwrites appointments with the NEW appointments as supplied above!
+        .then((res) => setState((prev) => (({...prev, appointments}))))
+    )
+  };
 
   // parsed version of appointments array to be rendered
   const parsedAppointments = dailyAppointments.map((appointment) => {
@@ -61,6 +82,7 @@ export default function Application(props) {
         interview={interview}
         interviewers={todaysInterviewers}
         bookInterview={bookInterview}
+        cancelInterview={cancelInterview} // DELETE INTERVIEW? DO I PASS THIS HERE?
       />
     );
   });
