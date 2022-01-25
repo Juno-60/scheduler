@@ -9,6 +9,8 @@ import { getAppointmentsForDay, getInterviewersForDay, getInterview } from "../h
 
 
 export default function Application(props) {
+
+  // set state for multiple components
   const [state, setState] = useState({
     day: "Monday",
     days: [],
@@ -16,12 +18,40 @@ export default function Application(props) {
     interviewers: {}
   });
 
-  const dailyAppointments = getAppointmentsForDay(state, state.day);
-  const todaysInterviewers = getInterviewersForDay(state, state.day)
-  console.log("todaysInterviewers: ", todaysInterviewers)
-
+  // sets state of "day"
   const setDay = day => setState({ ...state, day });
 
+  // gets results of selector functions
+  const dailyAppointments = getAppointmentsForDay(state, state.day);
+  const todaysInterviewers = getInterviewersForDay(state, state.day)
+
+  // function to book interviews, pass as props into each appointment component
+  function bookInterview(id, interview) {
+    console.log(id, interview);
+
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview }
+    };
+
+    const appointments = {
+      ...state.appointments,
+      [id]: appointment
+    };
+
+    setState({
+      ...state,
+      appointments
+    });
+
+    return (
+      axios.put(`api/appointments/${id}`, appointment)
+        .then((res) => setState((prev) => ({ ...prev, appointment })))
+        .catch(err => console.log(err.message))
+      )
+    };
+
+  // parsed version of appointments array to be rendered
   const parsedAppointments = dailyAppointments.map((appointment) => {
     const interview = getInterview(state, appointment.interview)
     return (
@@ -30,12 +60,12 @@ export default function Application(props) {
         {...appointment}
         interview={interview}
         interviewers={todaysInterviewers}
+        bookInterview={bookInterview}
       />
     );
   });
 
-  
-
+  // gets data from API, sets states of all once ALL data is retrieved (.then((all)...)
   useEffect(() => {
     Promise.all([
       axios.get("/api/days"),
@@ -54,8 +84,6 @@ export default function Application(props) {
       .catch((err) => console.log(err.message));
   },
     []);
-
-
 
   return (
     <main className="layout">
