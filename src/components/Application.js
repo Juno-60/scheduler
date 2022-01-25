@@ -82,7 +82,7 @@ export default function Application(props) {
         interview={interview}
         interviewers={todaysInterviewers}
         bookInterview={bookInterview}
-        cancelInterview={cancelInterview} // DELETE INTERVIEW? DO I PASS THIS HERE?
+        cancelInterview={cancelInterview}
       />
     );
   });

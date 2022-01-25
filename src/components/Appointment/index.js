@@ -10,7 +10,6 @@ import Status from "./Status.js";
 
 import "./styles.scss";
 
-
 export default function Appointment(props) {
   const EMPTY = "EMPTY";
   const SHOW = "SHOW";
@@ -18,6 +17,7 @@ export default function Appointment(props) {
   const SAVING = "SAVING";
   const DELETING = "DELETING";
   const CONFIRM = "CONFIRM";
+  const EDIT = "EDIT";
 
 
   function save(name, interviewer) {
@@ -37,11 +37,9 @@ export default function Appointment(props) {
     .then(() => (transition(EMPTY)));
   }
 
-
   const { mode, transition, back } = useVisualMode(
     props.interview ? SHOW : EMPTY
   );
-
 
   return (
     <article className="appointment">
@@ -57,6 +55,7 @@ export default function Appointment(props) {
         <Show
           student={props.interview.student}
           interviewer={props.interview.interviewer}
+          onEdit={() => transition(EDIT)}
           onDelete={() => transition(CONFIRM)}
         />
       )}
@@ -64,6 +63,16 @@ export default function Appointment(props) {
       {mode === CREATE && (
         <Form 
           interviewers={props.interviewers}
+          onCancel={back}
+          onSave={save}
+        />
+      )}
+        
+      {mode === EDIT && (
+        <Form
+          interviewers={props.interviewers}
+          student={props.interview.student}
+          interviewer={props.interview.interviewer.id}
           onCancel={back}
           onSave={save}
         />
