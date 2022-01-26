@@ -6,24 +6,19 @@ export default function useVisualMode(initial) {
 
 
   const transition = (mode, replace = false) => {
-
-    // set as current mode
     setMode(mode)
-    // create copy of history
     const newHistory = [...history]
 
-    // checks if replace is true
     if (replace) {
-      // pops current state off the top before setting history
       newHistory.pop()
-      setHistory(newHistory)
+      setHistory(prev => ([...prev, newHistory]))
     }
-
-    // add newly set mode to copy
+    // add newly set mode to copy of history
     newHistory.push(mode);
     // update "history" to copy of itself
     setHistory(newHistory)
   }
+
 
   const back = () => {
     // check if there IS a history

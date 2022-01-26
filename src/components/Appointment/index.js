@@ -7,6 +7,7 @@ import Empty from "./Empty.js";
 import Show from "./Show"
 import Form from "./Form.js";
 import Status from "./Status.js";
+import Error from "./Error.js";
 
 import "./styles.scss";
 
@@ -18,6 +19,8 @@ export default function Appointment(props) {
   const DELETING = "DELETING";
   const CONFIRM = "CONFIRM";
   const EDIT = "EDIT";
+  const ERROR_SAVE = "ERROR_SAVE";
+  const ERROR_DELETE = "ERROR_DELETE";
 
 
   function save(name, interviewer) {
@@ -27,14 +30,16 @@ export default function Appointment(props) {
     };
     transition(SAVING);
     props.bookInterview(props.id, interview)
-    .then(() => (transition(SHOW)));
+      .then(() => (transition(SHOW)))
+      .catch((err) => (transition(ERROR_SAVE, true)));
   }
 
 
   function cancel(id) {
-    transition(DELETING);
+    transition(DELETING, true);
     props.cancelInterview(props.id)
-    .then(() => (transition(EMPTY)));
+    .then(() => (transition(EMPTY)))
+    .catch((err) => (transition(ERROR_DELETE, true)));
   }
 
   const { mode, transition, back } = useVisualMode(
@@ -97,6 +102,19 @@ export default function Appointment(props) {
         />
       )}
 
+      {mode === ERROR_DELETE && (
+        <Error
+        keyword="delete"
+        onClose={back}
+        />
+      )}
+      
+      {mode === ERROR_SAVE && (
+        <Error
+        keyword="save"
+        onClose={back}
+        />
+      )}
     </article>
   );
 }

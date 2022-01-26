@@ -35,14 +35,10 @@ export default function Application(props) {
       ...state.appointments,
       [id]: appointment
     };
-    setState({
-      ...state,
-      appointments
-    });
     return (
       axios.put(`api/appointments/${id}`, appointment)
-        .then((res) => setState((prev) => ({ ...prev, appointment })))
-        .catch(err => console.log(err.message))
+        // .then((res) => setState((prev) => ({ ...prev, appointment })))
+        .then((res) => (setState({...state, appointments})))
     )
   };
 
@@ -69,6 +65,7 @@ export default function Application(props) {
       axios.delete(`api/appointments/${id}`)
       // takes in and makes a copy of the previous STATE, then overwrites appointments with the NEW appointments as supplied above!
         .then((res) => setState((prev) => (({...prev, appointments}))))
+        // .catch(err => console.log(err.message))
     )
   };
 
@@ -95,7 +92,6 @@ export default function Application(props) {
       axios.get("/api/interviewers"),
     ])
       .then((all) => {
-        console.log(all);
         setState(prev => ({
           ...prev,
           days: all[0].data,
