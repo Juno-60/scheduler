@@ -19,8 +19,8 @@ export default function DayListItem(props) {
 
     if (spots === 1) {
       return "1 spot remaining"
-    } 
-    
+    }
+
     if (spots > 1) {
       return `${spots} spots remaining`
     }
@@ -28,7 +28,7 @@ export default function DayListItem(props) {
 
   return (
     <li className={dayClass} onClick={() => setDay(name)}>
-      <h2 className="text--regular">{name}</h2> 
+      <h2 className="text--regular">{name}</h2>
       <h3 className="text--light">{formatSpots(spots)}</h3>
     </li>
   );

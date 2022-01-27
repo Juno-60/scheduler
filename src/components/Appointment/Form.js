@@ -17,8 +17,8 @@ export default function Form(props) {
   }
 
   const cancel = () => {
-      reset();
-      props.onCancel();
+    reset();
+    props.onCancel();
   }
 
   const validate = () => {
@@ -36,7 +36,7 @@ export default function Form(props) {
     props.onSave(student, interviewer)
   }
 
-   return (
+  return (
     <main className="appointment__card appointment__card--create">
       <section className="appointment__card-left">
         <form autoComplete="off" onSubmit={event => event.preventDefault()}>

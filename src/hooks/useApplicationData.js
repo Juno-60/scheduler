@@ -31,19 +31,45 @@ export default function useApplicationData(props) {
       .catch((err) => console.log(err.message));
   }, []);
 
-  function updateSpots(state, day) {
-    const currentDay = day || state.day;
-    const currentDayObject = state.days.find((dayObject) => dayObject.name === currentDay);
-    const currentDayObjectIndex = state.days.findIndex((dayObject) => dayObject.name === currentDay);
-    const listOfAppointmentIds = currentDayObject.appointments;
-    const listOfFreeAppointments = listOfAppointmentIds.filter((appointmentId) => !state.appointments[appointmentId].interview);
-    const newSpots = listOfFreeAppointments.length
-    const updatedState = {...state}
-    updatedState.days = [...state.days]
-    const updatedDay = {...currentDayObject};
-    updatedDay.spots = newSpots;
-    updatedState.days[currentDayObjectIndex] = updatedDay;
-    return updatedState;
+  // function updateSpots(state, day) {
+  //   const currentDay = day || state.day;
+  //   const currentDayObject = state.days.find((dayObject) => dayObject.name === currentDay);
+  //   const currentDayObjectIndex = state.days.findIndex((dayObject) => dayObject.name === currentDay);
+  //   const listOfAppointmentIds = currentDayObject.appointments;
+  //   const listOfFreeAppointments = listOfAppointmentIds.filter((appointmentId) => !state.appointments[appointmentId].interview);
+  //   const newSpots = listOfFreeAppointments.length
+  //   const updatedState = {...state}
+  //   updatedState.days = [...state.days]
+  //   const updatedDay = {...currentDayObject};
+  //   updatedDay.spots = newSpots;
+  //   updatedState.days[currentDayObjectIndex] = updatedDay;
+  //   return updatedState;
+  // }
+
+  function updateSpots(state, dayName) {
+    const currentDayName = dayName || state.day;
+    const { days, appointments } = state;
+
+    // get index of current day in "state.days" by findIndex according to currentDayName
+    const currentDayIndex = days.findIndex(day => day.name === currentDayName);
+    // return correct days object using index as selected above
+    const currentDay = days[currentDayIndex];
+
+    const appointmentIds = currentDay.appointments
+    // filters appointments array inside current day object, returning copied array of only null values
+    const freeAppointments = appointmentIds.filter(appointmentId => !appointments[appointmentId].interview);
+    // sets newSpots to the length of returned filtered array - this is how many nulls there are
+    const newSpots = freeAppointments.length;
+
+    // sets currentDay.spots to the value of newSpots, and days at the correct index to the currentDay's new value
+    currentDay.spots = newSpots;
+    days[currentDayIndex] = currentDay;
+
+    // returns shallow copy of state, overwriting the days value using the currentDay setting above
+    return {
+      ...state,
+      days
+    };
   }
 
   function bookInterview(id, interview) {
