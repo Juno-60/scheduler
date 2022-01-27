@@ -3,7 +3,7 @@ import axios from "axios";
 
 import "components/Appointment"
 
-export default function useApplicationData() {
+export default function useApplicationData(props) {
 
   const [state, setState] = useState({
     day: "Monday",
@@ -13,17 +13,6 @@ export default function useApplicationData() {
   });
 
   const setDay = day => setState({ ...state, day });
-
-  function updateSpots() {
-    // console.log("state.days: ", state.days) // returns all days as array
-    // console.log("state.day: ", state.day) // - returns current day as string
-    // console.log("state.days.0.name: ", state.days[0].name) // returns day 0 name as string
-
-    // REQUEST CODE REVIEW ON THIS!!!
-    axios.get('api/days')
-      .then((res) => setState((prev) => ({ ...prev, days: res.data })))
-      // .then(console.log(state.days))
-  }
 
   useEffect(() => {
     Promise.all([
@@ -40,8 +29,22 @@ export default function useApplicationData() {
         }));
       })
       .catch((err) => console.log(err.message));
-  },
-    []);
+  }, []);
+
+  function updateSpots(state, day) {
+    const currentDay = day || state.day;
+    const currentDayObject = state.days.find((dayObject) => dayObject.name === currentDay);
+    const currentDayObjectIndex = state.days.findIndex((dayObject) => dayObject.name === currentDay);
+    const listOfAppointmentIds = currentDayObject.appointments;
+    const listOfFreeAppointments = listOfAppointmentIds.filter((appointmentId) => !state.appointments[appointmentId].interview);
+    const newSpots = listOfFreeAppointments.length
+    const updatedState = {...state}
+    updatedState.days = [...state.days]
+    const updatedDay = {...currentDayObject};
+    updatedDay.spots = newSpots;
+    updatedState.days[currentDayObjectIndex] = updatedDay;
+    return updatedState;
+  }
 
   function bookInterview(id, interview) {
     const appointment = {
@@ -54,8 +57,7 @@ export default function useApplicationData() {
     };
     return (
       axios.put(`api/appointments/${id}`, appointment)
-        .then((res) => setState((prev) => (({ ...prev, appointments }))))
-        .then(updateSpots())
+      .then((res) => setState(updateSpots({...state, appointments})))
     )
   };
 
@@ -73,14 +75,10 @@ export default function useApplicationData() {
       // targets ID of appointments, overwrites it with value of appointment variable from above
       [id]: appointment
     };
-    // 
     return (
       axios.delete(`api/appointments/${id}`)
         // takes in and makes a copy of the previous STATE, then overwrites appointments with the NEW appointments as supplied above!
-        .then((res) => setState((prev) => (({ ...prev, appointments }))))
-        .then(updateSpots())
-    )
-  };
-
+        .then((res) => setState(updateSpots({...state, appointments})))
+  )}
   return { state, setDay, bookInterview, cancelInterview, updateSpots }
-}
+};
