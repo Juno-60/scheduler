@@ -31,7 +31,7 @@ export default function Appointment(props) {
     transition(SAVING);
     props.bookInterview(props.id, interview)
       .then(() => (transition(SHOW)))
-      .catch((err) => (transition(ERROR_SAVE, true)));
+      .catch((err) => (transition(ERROR_SAVE))); // adding 'true' here would return to the "empty" view
   }
 
 
